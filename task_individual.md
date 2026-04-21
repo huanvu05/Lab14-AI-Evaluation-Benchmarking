@@ -1,215 +1,123 @@
-### 👥 PHÂN CÔNG CHÍNH THỨC
-### 👨‍💻 PERSON A – DATA + RETRIEVAL + DATA ENGINEERING
+### 🚀 Kế hoạch Triển khai Lab 14: AI Evaluation Factory
 
-### Vai trò: Data Engineer / Retrieval Engineer
+Dành riêng cho nhóm 2 người - Chiến lược "Zero-Conflict" (Không đụng file)
 
-### 📁 OWN FOLDER STRUCTURE (KHÔNG ĐƯỢC ĐỤNG PERSON B)
-data/
-  synthetic_gen.py
-  golden_set.jsonl
+Mục tiêu của tài liệu này là tối ưu hóa sức lực của 2 người để đạt 100/100 điểm Expert. Chìa khóa thành công là chia tách hoàn toàn quyền sở hữu file (File Ownership) và giao tiếp với nhau thông qua một cấu trúc JSON duy nhất (API Contract).
 
-retrieval/
-  evaluator.py
-  metrics.py
-  retriever_eval_runner.py
+### 🤝 THE HANDSHAKE: Giao kèo Dữ liệu (Thống nhất trước khi code)
 
-reports/
-  retrieval_report.json
-### 🧠 TASK 1 – Synthetic Dataset Generation
-📄 File: data/synthetic_gen.py
-🎯 Làm gì:
-Sinh 50–100 test cases
-Mỗi case phải có:
-{
-  "id": "q1",
-  "query": "...",
-  "ground_truth_doc_id": "doc_12",
-  "expected_answer": "..."
-}
-⚙️ Logic bắt buộc:
-Có 4 loại câu hỏi:
-fact-based
-multi-hop
-tricky (adversarial)
-paraphrase
-Ensure coverage retrieval edge cases
-💡 Điểm cao:
-Có “hard cases” để test failure retrieval
-Có mapping doc_id rõ ràng
-Không random noise
-### 🧠 TASK 2 – Retrieval Evaluation Engine
-📄 File: retrieval/evaluator.py
-🎯 Làm gì:
-Input:
-query
-retrieved docs
-ground truth doc id
-📊 Metrics:
-1. Hit Rate
-Top-K có chứa correct doc không
-2. MRR
-Reciprocal rank của correct doc
-📄 File: retrieval/metrics.py
-🎯 Làm gì:
-Implement metric functions:
-def hit_rate(retrieved, ground_truth)
-def mean_reciprocal_rank(results)
-📄 File: retrieval/retriever_eval_runner.py
-🎯 Làm gì:
-Loop toàn bộ golden set
-Call retriever
-Collect metrics
-Save report:
-reports/retrieval_report.json
-🏆 CÁCH ĐỂ PERSON A ĐẠT ĐIỂM CAO
+Hai người không cần làm chung file, chỉ cần thống nhất 1 điều duy nhất: Định dạng file sinh ra từ Task A (Person A) để Task B (Person B) đọc vào.
 
-✔ Có phân tích:
+File: data/golden_set.jsonl (Person A tạo ra, Person B chỉ đọc)
 
-Retrieval failure cases
-Chunking issues
-Query ambiguity
+{"id": "case_1", "query": "Lãi suất vay mua nhà là bao nhiêu?", "expected_answer": "Khoảng 6.5%/năm", "ground_truth_doc_id": "doc_vay_nha_01", "difficulty": "easy"}
 
-✔ Có số liệu:
 
-Hit Rate @1 / @5 / @10
-MRR average
+### 👤 PERSON A: DATA & RETRIEVAL MASTER
 
-✔ Có conclusion:
+Nhiệm vụ: Đóng vai trò "Red Team" (người tạo ra bẫy) và kỹ sư đo lường hệ thống tìm kiếm (VectorDB).
+Quyền sở hữu file (Person B tuyệt đối không sửa):
 
-Retrieval ảnh hưởng generation như thế nào
-### 👨‍💻 PERSON B – AI EVALUATION + BENCHMARK + REGRESSION
+data/synthetic_gen.py
 
-### Vai trò: AI Engineer / Backend / Evaluation System Architect
+data/HARD_CASES_GUIDE.md
 
-### 📁 OWN FOLDER STRUCTURE (KHÔNG ĐỤNG PERSON A)
-evaluation/
-  judges/
-    gpt_judge.py
-    claude_judge.py
+engine/retrieval_eval.py
 
-  consensus.py
-  evaluator_engine.py
+analysis/reflections/reflection_PersonA.md
 
-benchmark/
-  async_runner.py
-  benchmark.py
+📝 Chi tiết công việc & Cách lấy điểm cao:
 
-regression/
-  compare.py
-  release_gate.py
+### 1. File data/synthetic_gen.py (Mục tiêu: Golden Dataset & SDG - 10đ)
 
-analysis/
-  failure_analysis.md
-### 🧠 TASK 1 – Multi-Judge System
-📄 evaluation/judges/gpt_judge.py
-🎯 Làm gì:
-Call LLM GPT để chấm:
-correctness
-faithfulness
-relevance
+Làm gì: Viết script tự động sinh ra file data/golden_set.jsonl với ít nhất 50 test cases.
 
-Output:
+Bí quyết điểm cao (Expert):
 
-{
-  "score": 0-10,
-  "reason": "..."
-}
-📄 evaluation/judges/claude_judge.py
-Same interface nhưng model khác
-Mục tiêu: diversity judge
-📄 evaluation/consensus.py
-🎯 Làm gì:
-Combine 2 judges:
-final_score = (gpt_score + claude_score) / 2
-+ nâng cao:
-Agreement rate:
-abs(gpt - claude) < threshold
-### 🧠 TASK 2 – Evaluation Engine Core
-📄 evaluation/evaluator_engine.py
-🎯 Pipeline:
-query → retrieval context → agent answer → judges → final score
-Output:
-{
-  "query": "",
-  "answer": "",
-  "score": 8.2,
-  "judge_details": {...}
-}
-### ⚡ TASK 3 – Async Benchmark System
-📄 benchmark/async_runner.py
-🎯 Làm gì:
-Run 50+ eval cases parallel
-Yêu cầu:
-asyncio / multiprocessing
-batch processing
-timeout handling
-📄 benchmark/benchmark.py
-Output:
-reports/benchmark_results.json
+Không được dùng file tĩnh, phải có code Python sinh ra file JSONL.
 
-Bao gồm:
+Phải có tỷ lệ phân bổ độ khó (Difficulty Distribution). Ví dụ: 20 câu Dễ, 20 câu Khó (Multi-hop, cần 2 documents để trả lời), 10 câu Bẫy (Adversarial - từ ngữ mập mờ).
 
-latency
-cost
-score distribution
-failure rate
-### 🔁 TASK 4 – REGRESSION SYSTEM
-📄 regression/compare.py
-🎯 So sánh V1 vs V2:
-Score delta
-Retrieval delta
-Latency delta
-📄 regression/release_gate.py
-🎯 Logic quyết định:
-if score_v2 > score_v1 and cost <= threshold:
-    RELEASE
-else:
-    ROLLBACK
-### 🧠 TASK 5 – FAILURE ANALYSIS
-📄 analysis/failure_analysis.md
-🎯 Bắt buộc có:
-1. Failure clustering:
-retrieval error
-hallucination
-reasoning error
-2. 5 Whys format:
-Problem: Wrong answer
-Why 1: retrieval wrong
-Why 2: chunk mismatch
-Why 3: bad splitting
-Why 4: no overlap
-Why 5: ingestion pipeline weak
-🏆 CÁCH ĐỂ PERSON B ĐẠT ĐIỂM CAO
+Bắt buộc phải có trường ground_truth_doc_id chính xác.
 
-✔ Có Multi-Judge + Consensus
-✔ Có Async benchmark thật sự chạy nhanh
-✔ Có regression logic rõ ràng
-✔ Có auto release gate
-✔ Có failure analysis sâu (5 Whys đúng bản chất hệ thống)
+### 2. File engine/retrieval_eval.py (Mục tiêu: Retrieval Evaluation - 10đ)
 
-### 🚨 QUY TẮC KHÔNG ĐƯỢC VI PHẠM
+Làm gì: Xây dựng module nhận đầu vào là danh sách các ID tài liệu Agent tìm được, so sánh với ground_truth_doc_id để chấm điểm tìm kiếm.
 
-❌ Không dùng chung file giữa 2 người
-❌ Không hardcode result
-❌ Không thiếu Retrieval metrics
-❌ Không chỉ 1 judge
+Hàm cần viết:
 
-### ⚙️ FINAL ARCHITECTURE FLOW
-### PERSON A:
-  Dataset → Retrieval → Metrics
+calculate_hit_rate(retrieved_docs, ground_truth, k=5): Tính tỷ lệ tìm trúng đích trong Top K.
 
-          ↓
+calculate_mrr(retrieved_docs, ground_truth): Tính Mean Reciprocal Rank (chỉ số ưu tiên document đúng nằm ở vị trí cao).
 
-### PERSON B:
-  Agent → Judges → Benchmark → Regression → Report
-### 🏆 STRATEGY ĐỂ ĐẠT >90/100
-### 🔥 MUST HAVE:
-Multi-Judge system
-Retrieval metrics (MRR + Hit Rate)
-Async evaluation
-Regression system
-🔥 DIFFERENCE MAKER:
-Failure clustering thông minh
-5 Whys sâu đến root cause thật
-Release gate logic rõ ràng
-Benchmark nhanh + cost tracking
+Bí quyết điểm cao (Expert): Comment giải thích rõ ràng công thức MRR trong code. Trả về kết quả dưới dạng Dict để Person B dễ dàng gọi hàm.
+
+### 3. Files Phân tích & Báo cáo
+
+data/HARD_CASES_GUIDE.md: Liệt kê 3-5 câu hỏi bẫy khó nhất bạn đã tạo, giải thích vì sao nó có thể làm gãy hệ thống (Red Teaming).
+
+reflection_PersonA.md: Viết về khó khăn khi định nghĩa Ground Truth cho các câu hỏi mập mờ và cách tính MRR.
+
+### 👤 PERSON B: EVALUATION PIPELINE & ANALYST
+
+Nhiệm vụ: Kỹ sư xây dựng "Nhà máy chấm điểm", chạy Async tốc độ cao, xử lý đa giám khảo và đưa ra quyết định Release.
+Quyền sở hữu file (Person A tuyệt đối không sửa):
+
+engine/llm_judge.py
+
+engine/runner.py
+
+main.py
+
+analysis/failure_analysis.md
+
+analysis/reflections/reflection_PersonB.md
+
+📝 Chi tiết công việc & Cách lấy điểm cao:
+
+### 1. File engine/llm_judge.py (Mục tiêu: Multi-Judge Consensus - 15đ)
+
+Làm gì: Viết class hoặc hàm gọi API của ít nhất 2 Giám khảo LLM khác nhau (VD: GPT-4o-mini làm Judge 1, Claude-3-Haiku hoặc Prompt check Rule-based làm Judge 2).
+
+Bí quyết điểm cao (Expert): - Tránh prompt sơ sài. Phải cung cấp query, expected_answer, và agent_answer cho giám khảo.
+
+Viết logic calculate_consensus(score1, score2): Tính độ chênh lệch điểm. Nếu chênh nhau <= 2 điểm -> lấy trung bình. Nếu chênh > 2 -> gán cờ needs_human_review = True.
+
+Đỉnh cao: Implement chỉ số toán học Cohen's Kappa (có thể dùng thư viện sklearn) để đo độ đồng thuận của 2 Judge.
+
+### 2. File engine/runner.py (Mục tiêu: Performance Async - 10đ)
+
+Làm gì: Viết hàm run_benchmark_async() sử dụng thư viện asyncio và aiohttp để gọi LLM Judge song song.
+
+Bí quyết điểm cao (Expert): - Sử dụng asyncio.Semaphore(10) để giới hạn số luồng gọi cùng lúc (tránh lỗi Rate Limit 429 từ OpenAI/Anthropic).
+
+Có bộ đếm token và nội suy ra Chi phí (Cost) cho lần chạy benchmark. Đo thời gian (Latency) phải < 2 phút cho 50 cases.
+
+### 3. File main.py (Mục tiêu: Regression Testing - 10đ)
+
+Làm gì: File thực thi chính. Import hàm của Person A và Person B.
+
+Luồng chạy: Đọc dataset -> Chạy Retrieval Eval (Person A) -> Chạy LLM Judge Eval (Person B).
+
+Bí quyết điểm cao (Expert): Viết thêm hàm auto_release_gate(metrics_v1, metrics_v2). Logic: Nếu MRR V2 > V1 VÀ Final Score V2 >= V1 -> In ra màn hình console [PASS] VERSION V2 IS READY FOR RELEASE.
+
+### 4. Files Phân tích & Báo cáo (Mục tiêu: Failure Analysis - 5đ)
+
+analysis/failure_analysis.md: Mở file benchmark_results.json sau khi chạy xong, lọc ra những câu bị dưới 5 điểm. Sử dụng phương pháp "5 Whys" (Hỏi tại sao 5 lần).
+Ví dụ: Tại sao điểm thấp? -> Vì agent sinh ra hallucination. -> Tại sao hallucination? -> Vì context đưa vào bị sai. -> Tại sao context sai? -> Vì hệ thống Retrieval tìm sai doc (nhìn điểm Hit Rate bằng 0). -> Kết luận lỗi gốc (Root Cause): Ingestion/Chunking.
+
+reflection_PersonB.md: Viết về cách khắc phục lỗi Rate Limit khi chạy Async, hoặc khó khăn khi dung hòa điểm số giữa 2 giám khảo.
+
+### 🚦 QUY TRÌNH NỘP BÀI CHUẨN XÁC
+
+Để chắc chắn pass check_lab.py:
+
+### Person A chạy: python data/synthetic_gen.py (để sinh data).
+
+### Person B chạy: python main.py (để sinh ra thư mục reports/ chứa summary.json).
+
+### Cả hai cùng kiểm tra: python check_lab.py
+
+Gom tất cả push lên Github. Đảm bảo file .env đã được đưa vào .gitignore.
+
+Chúc 2 bạn trở thành cỗ máy AI Engineering hoàn hảo! 🚀
