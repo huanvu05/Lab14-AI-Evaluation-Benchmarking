@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "version": "Agent_V2_Optimized",
+    "total": 50,
+    "timestamp": "2026-04-21 16:27:45"
+  },
+  "metrics": {
+    "avg_score": 4.27,
+    "hit_rate": 0.0,
+    "agreement_rate": 0.502,
+    "avg_latency": 0.303
+  },
+  "release_decision": "ROLLBACK"
+}
