@@ -3,8 +3,13 @@
 ## 1. Failure Clustering
 During the evaluation of V2 Optimized, we observed the following issues across tests:
 - **Total Test Cases**: 50
+<<<<<<< HEAD
 - **Low Score Cases (< 5)**: 50
 - **Judge Conflict Cases**: 49
+=======
+- **Low Score Cases (< 5)**: 13
+- **Judge Conflict Cases**: 10
+>>>>>>> use-done
 
 ### Key Clusters:
 1. **Retrieval Failure**: Instances where Hit Rate = 0.
