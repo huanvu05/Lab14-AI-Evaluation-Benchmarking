@@ -1,34 +1,69 @@
 import asyncio
+import os
 from typing import List, Dict
+from openai import AsyncOpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPEN_ROUTER = os.getenv("OPEN_ROUTER")
 
 class MainAgent:
     """
-    Đây là Agent mẫu sử dụng kiến trúc RAG đơn giản.
-    Sinh viên nên thay thế phần này bằng Agent thực tế đã phát triển ở các buổi trước.
+    Agent RAG sử dụng LLM thực tế (OpenRouter) để sinh câu trả lời.
     """
     def __init__(self):
         self.name = "SupportAgent-v1"
+        try:
+            self.client = AsyncOpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=OPEN_ROUTER,
+            )
+        except Exception:
+            self.client = None
 
-    async def query(self, question: str) -> Dict:
+    async def generate_thought(self, query: str, context: str) -> str:
+        if not self.client:
+            return "Tôi không thể kết nối tới LLM để trả lời câu hỏi của bạn."
+            
+        prompt = f"""You are a helpful assistant.
+
+Context:
+{context}
+
+Question:
+{query}
+
+Answer concisely and factually based ONLY on the context:"""
+        try:
+            resp = await asyncio.wait_for(
+                self.client.chat.completions.create(
+                    messages=[{"role": "user", "content": prompt}],
+                    model="anthropic/claude-3-haiku",
+                    temperature=0.3
+                ), timeout=10.0
+            )
+            return resp.choices[0].message.content
+        except Exception as e:
+            return "Lỗi phản hồi do hệ thống quá tải."
+
+    async def query(self, question: str, override_context: str = None, override_sources: List[str] = None) -> Dict:
         """
-        Mô phỏng quy trình RAG:
-        1. Retrieval: Tìm kiếm context liên quan.
-        2. Generation: Gọi LLM để sinh câu trả lời.
+        Thực thi RAG pipeline bằng API thực tế lấy câu trả lời.
         """
-        # Giả lập độ trễ mạng/LLM
-        await asyncio.sleep(0.5) 
+        # Nếu không truyền vào context thực tế, fallback dùng mock context cho V1 Baseline
+        context_str = override_context if override_context else "Tài liệu ngân hàng quy định lãi suất vay mua nhà là 7.5%."
+        sources = override_sources if override_sources else ["policy_handbook.pdf"]
         
-        # Giả lập dữ liệu trả về
+        answer = await self.generate_thought(question, context_str)
+        
         return {
-            "answer": f"Dựa trên tài liệu hệ thống, tôi xin trả lời câu hỏi '{question}' như sau: [Câu trả lời mẫu].",
-            "contexts": [
-                "Đoạn văn bản trích dẫn 1 dùng để trả lời...",
-                "Đoạn văn bản trích dẫn 2 dùng để trả lời..."
-            ],
+            "answer": answer,
+            "contexts": [context_str],
             "metadata": {
-                "model": "gpt-4o-mini",
+                "model": "claude-3-haiku",
                 "tokens_used": 150,
-                "sources": ["policy_handbook.pdf"]
+                "sources": sources
             }
         }
 

@@ -8,9 +8,9 @@ import google.generativeai as genai
 sys.stdout.reconfigure(encoding='utf-8')
 load_dotenv()
 
-API_KEY = os.getenv("GOOGLE_API_KEY")
+API_KEY = os.getenv("GOOGLE_TOKEN")
 if not API_KEY:
-    print("Error: GOOGLE_API_KEY not found in .env file.")
+    print("Error: GOOGLE_TOKEN not found in .env file.")
     sys.exit(1)
 
 genai.configure(api_key=API_KEY)
